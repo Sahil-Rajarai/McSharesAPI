@@ -13,22 +13,23 @@ namespace McSharesAPI.Repository
         {
             return null;
         }
-        public List<Customer> GetAllCustomer()
+
+        public Dictionary<string, Customer> CreateCustomers(List<Customer> customersList)
         {
-            Customer c = new Customer 
+            foreach(Customer cust in customersList)
             {
-                CustomerId = "1",
-                CustomerType = "test",
-                RegistrationNo = "134"
-            };
-
-            CustomerList.Add(c);
-
-            return CustomerList;
+                IdToCustomerList.Add(cust.CustomerId, cust);
+            }
+            
+            return IdToCustomerList;
+        }
+        public Dictionary<string, Customer> GetAllCustomer()
+        {
+            return IdToCustomerList;
         }
         public Customer GetCustomerById(string Id)
         {
-            return null;
+            return IdToCustomerList.ContainsKey(Id) ? IdToCustomerList[Id] : null;
         }
         public Customer UpdateCustomer(string Id)
         {

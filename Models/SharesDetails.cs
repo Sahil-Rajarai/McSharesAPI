@@ -4,8 +4,10 @@ namespace McSharesAPI.Models
 {
     public class SharesDetails
     {
-        public string Shares_Id { get; set; }
+        [System.Xml.Serialization.XmlElement("Num_Shares")]
         public string NumShares { get; set; }
+
+        [System.Xml.Serialization.XmlElement("Share_Price")]
         public string SharePrice { get; set; }
     
     }
