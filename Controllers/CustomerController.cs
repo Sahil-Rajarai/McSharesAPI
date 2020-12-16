@@ -23,14 +23,14 @@ namespace McSharesAPI.Controllers
             _customerRepository = customerRepository;
         }
 
-        // GET: api/Customer
-        [HttpGet]
+        // GET: api/Customer/details
+        [HttpGet("details")]
         public Dictionary<string, Customer> Get() =>
             _customerRepository.GetAllCustomer();
 
         
         // GET: api/Customer/5
-        [HttpGet("{id}")]
+        [HttpGet("{id}/details")]
         public ActionResult<Customer> GetCustomer(string id)
         {
             var customer = _customerRepository.GetCustomerById(id);
@@ -40,9 +40,38 @@ namespace McSharesAPI.Controllers
                 return NotFound();
             }
 
-            return customer;
+            return Ok(customer);
         }
 
+        // GET: api/Customer
+        [HttpGet]
+        public List<CustomerEntity> GetAllCustomerEntity()
+        {
+            List<CustomerEntity> customerEntityList = new List<CustomerEntity>();
+
+            foreach(Customer currentCust in _customerRepository.GetAllCustomer().Values)
+            {
+                var custEntity = ConvertCustomerToCustomerEntity(currentCust);
+                customerEntityList.Add(custEntity);
+            }
+
+            return customerEntityList;
+        }
+
+          // GET: api/Customer
+        [HttpGet("{id}")]
+        public ActionResult<CustomerEntity> GetCustomerEntityById(String Id)
+        {
+            var customer = _customerRepository.GetCustomerById(Id);
+
+            if (customer == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(ConvertCustomerToCustomerEntity(customer));
+        }
+            
         [HttpPost("upload")]
         public async Task<IActionResult> UploadXMLFile([FromForm] IFormFile file)
         {
@@ -63,13 +92,40 @@ namespace McSharesAPI.Controllers
             return Ok(createdCustomers);
         }
 
+         // PUT: api/TodoItems/5
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPut("{id}")]
+        public ActionResult<CustomerEntity> PutCustomer(string id, CustomerEntity customerEntity)
+        {
+            Customer cust = _customerRepository.GetCustomerById(id);
+
+            if (cust == null)
+            {
+                return BadRequest();
+            }
+
+            if(!String.IsNullOrEmpty(customerEntity.CustomerId) && id != customerEntity.CustomerId)
+            {
+                return NotFound();
+            }
+
+            if(customerEntity.CustomerType == "Corporate" && customerEntity.NumShares.ToString() != cust.Shares.NumShares)
+            {
+                return BadRequest("Number of Shares is not amendable if the customer is a Corporate");
+            }
+
+            var customer = _customerRepository.UpdateCustomer(cust, customerEntity);
+
+            return Ok(ConvertCustomerToCustomerEntity(customer));
+        }
+
         public List<Customer> ValidateFile(XmlDocument xmlFile) 
         {
             List<Customer> customerList = new List<Customer>();
             var xmlNodes = xmlFile.SelectNodes("RequestDoc/Doc_Data/DataItem_Customer");
             XmlSerializer serial = new XmlSerializer(typeof(Customer));
 
-            foreach (XmlNode node in xmlNodes)
+            foreach(XmlNode node in xmlNodes)
             {
                 Customer currentCust =(Customer)serial.Deserialize(new XmlNodeReader(node));
                 
@@ -114,6 +170,24 @@ namespace McSharesAPI.Controllers
             }
 
             return false;
+        }
+
+        public CustomerEntity ConvertCustomerToCustomerEntity(Customer customer)
+        {
+            var custEntity = new CustomerEntity
+            {
+                CustomerId =  customer.CustomerId,
+                CustomerName =  customer.Contacts.ContactName,
+                DateOfBirth =  customer.DateOfBirth,
+                DateIncorp =  customer.DateIncorp,
+                CustomerType =  customer.CustomerType,
+                NumShares =  double.Parse(customer.Shares.NumShares),
+                SharePrice =  double.Parse(customer.Shares.SharePrice)
+            };
+
+            custEntity.Balance = custEntity.NumShares * custEntity.SharePrice;
+
+            return custEntity;
         }
     }
 }

@@ -9,7 +9,7 @@ namespace McSharesAPI.Repository
         Dictionary<string, Customer> CreateCustomers(List<Customer> customersList);   
         Dictionary<string, Customer> GetAllCustomer();   
         Customer GetCustomerById(string Id);   
-        Customer UpdateCustomer(string Id);   
+        Customer UpdateCustomer(Customer customerToUpdate, CustomerEntity customerEntity);   
         Customer DeleteCustomer(string Id);   
     }
 }

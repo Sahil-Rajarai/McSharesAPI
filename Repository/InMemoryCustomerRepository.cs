@@ -7,8 +7,6 @@ namespace McSharesAPI.Repository
     public class InMemoryCustomerRepository : ICustomerRepository
     {
         public Dictionary<string, Customer> IdToCustomerList = new Dictionary<string, Customer>();
-        public List<Customer> CustomerList = new List<Customer>();
-
         public Customer CreateCustomer(Customer cust)
         {
             return null;
@@ -31,9 +29,15 @@ namespace McSharesAPI.Repository
         {
             return IdToCustomerList.ContainsKey(Id) ? IdToCustomerList[Id] : null;
         }
-        public Customer UpdateCustomer(string Id)
+        public Customer UpdateCustomer(Customer customerToUpdate, CustomerEntity customerEntity)
         {
-            return null;
+            customerToUpdate.Contacts.ContactName = customerEntity.CustomerName;
+            customerToUpdate.DateOfBirth = customerEntity.DateOfBirth;
+            customerToUpdate.DateIncorp = customerEntity.DateIncorp;
+            customerToUpdate.Shares.NumShares = customerEntity.NumShares.ToString();
+            customerToUpdate.Shares.SharePrice = customerEntity.SharePrice.ToString();
+
+            return customerToUpdate;
         }
         public Customer DeleteCustomer(string Id)
         {
