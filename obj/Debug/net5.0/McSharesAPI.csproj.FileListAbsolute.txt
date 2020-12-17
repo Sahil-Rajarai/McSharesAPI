@@ -135,3 +135,4 @@ C:\Users\Lenovo\Documents\McSharesAPI\obj\Debug\net5.0\McSharesAPI.dll
 C:\Users\Lenovo\Documents\McSharesAPI\obj\Debug\net5.0\ref\McSharesAPI.dll
 C:\Users\Lenovo\Documents\McSharesAPI\obj\Debug\net5.0\McSharesAPI.pdb
 C:\Users\Lenovo\Documents\McSharesAPI\obj\Debug\net5.0\McSharesAPI.genruntimeconfig.cache
+C:\Users\Lenovo\Documents\McSharesAPI\bin\Debug\net5.0\CsvHelper.dll

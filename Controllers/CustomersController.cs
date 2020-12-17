@@ -11,6 +11,9 @@ using System.Xml;
 using System.Xml.Serialization;
 using McSharesAPI.Services;
 using Microsoft.AspNetCore.Http;
+using CsvHelper;
+using CsvHelper.Configuration;
+using System.Text;
 
 namespace McSharesAPI.Controllers
 {
@@ -40,7 +43,9 @@ namespace McSharesAPI.Controllers
 
             if (customer == null)
             {
-                return NotFound();
+                var error = StaticVariables.errorCustomerNotFound;
+                _logger.LogError(error, DateTime.Now);
+                return NotFound(error);
             }
 
             return Ok(customer);
@@ -69,7 +74,7 @@ namespace McSharesAPI.Controllers
 
             if (customer == null)
             {
-                var error = "Customer not found";
+                var error = StaticVariables.errorCustomerNotFound;
                 _logger.LogError(error, DateTime.Now);
                 return NotFound(error);
                 
@@ -95,7 +100,15 @@ namespace McSharesAPI.Controllers
             List<Customer> customers =  CustomerService.ValidateFile(xml);
             var createdCustomers = _customerRepository.CreateCustomers(customers);
            
-            return Ok(createdCustomers);
+           if(createdCustomers.Values.First() is null)
+           {
+                var error = createdCustomers.Keys.First();
+                _logger.LogError(error, DateTime.Now);
+                return BadRequest(error);
+           }
+
+            return Created(nameof(Customer), createdCustomers);
+
         }
 
          // PUT: api/TodoItems/5
@@ -107,21 +120,21 @@ namespace McSharesAPI.Controllers
 
             if (cust == null)
             {
-                var error = "Id is incorrect";
+                var error = StaticVariables.errorIncorrectId;
                 _logger.LogError(error, DateTime.Now);
                 return BadRequest(error);
             }
 
             if(!String.IsNullOrEmpty(customerEntity.CustomerId) && id != customerEntity.CustomerId)
             {
-                var error = "Id is not amendable";
+                var error = StaticVariables.errorNotAmendableId;
                 _logger.LogError(error, DateTime.Now);
                 return BadRequest(error);
             }
 
             if(customerEntity.CustomerType == "Corporate" && customerEntity.NumShares.ToString() != cust.Shares.NumShares)
             {
-                var error = "Number of Shares is not amendable if the customer is a Corporate";
+                var error = StaticVariables.errorNumShares;
                 _logger.LogError(error, DateTime.Now);
                 return BadRequest(error);
             }
@@ -140,7 +153,7 @@ namespace McSharesAPI.Controllers
 
             if(!customerList.Any())
             {
-                var error = "No customers found";
+                var error = StaticVariables.errorNoCustomersFoundName;
                 _logger.LogError(error, DateTime.Now);
                 return NotFound(error);
             }
@@ -152,6 +165,50 @@ namespace McSharesAPI.Controllers
             }
 
             return Ok(customerEntityList);
+        }
+
+         // GET: api/Customers/export
+        [HttpGet("export")]
+        public ActionResult GetCSVFile()
+        {
+            var customerEntityList = new List<CustomerEntity>();
+
+            foreach(Customer currentCust in _customerRepository.GetAllCustomer().Values)
+            {
+                var custEntity = CustomerMapper.ConvertCustomerToCustomerEntity(currentCust);
+                customerEntityList.Add(custEntity);
+            }
+
+            var cc = new CsvConfiguration(new System.Globalization.CultureInfo("en-US"));
+            
+            try
+            {
+                if(customerEntityList.Any())
+                {
+                    using (var ms = new MemoryStream())
+                    {
+                        using (var sw = new StreamWriter(stream: ms, encoding: new UTF8Encoding(true)))
+                        {
+                            using (var cw = new CsvWriter(sw, cc))
+                            {
+                                cw.WriteRecords(customerEntityList);
+                            }
+                            
+                            return File(ms.ToArray(), "text/csv", "Reports.csv");
+                        }
+                    }
+                }
+
+                var error = StaticVariables.errorNoCustomersFound;
+                _logger.LogError(error, DateTime.Now);
+                return NotFound(error);
+            }
+            catch(Exception e)
+            {
+                _logger.LogError(e.Message, DateTime.Now);
+                return BadRequest(e.Message);
+            }
+           
         }
 
     }

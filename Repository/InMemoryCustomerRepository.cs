@@ -2,12 +2,13 @@ using McSharesAPI.Repository;
 using McSharesAPI.Models;
 using System.Linq;
 using System.Collections.Generic;
+using System;
 
 namespace McSharesAPI.Repository
 {
     public class InMemoryCustomerRepository : ICustomerRepository
     {
-        public Dictionary<string, Customer> IdToCustomerList = new Dictionary<string, Customer>();
+        public Dictionary<string, Customer> IdToCustomerDictionary = new Dictionary<string, Customer>();
         public Customer CreateCustomer(Customer cust)
         {
             return null;
@@ -17,18 +18,28 @@ namespace McSharesAPI.Repository
         {
             foreach(Customer cust in customersList)
             {
-                IdToCustomerList.Add(cust.CustomerId, cust);
+                try
+                {
+                    IdToCustomerDictionary.Add(cust.CustomerId, cust);
+                }
+                catch(Exception e)
+                {
+                    return new Dictionary<string, Customer>
+                    {
+                        { e.Message, null }
+                    };
+                }
             }
             
-            return IdToCustomerList;
+            return IdToCustomerDictionary;
         }
         public Dictionary<string, Customer> GetAllCustomer()
         {
-            return IdToCustomerList;
+            return IdToCustomerDictionary;
         }
         public Customer GetCustomerById(string Id)
         {
-            return IdToCustomerList.ContainsKey(Id) ? IdToCustomerList[Id] : null;
+            return IdToCustomerDictionary.ContainsKey(Id) ? IdToCustomerDictionary[Id] : null;
         }
         public Customer UpdateCustomer(Customer customerToUpdate, CustomerEntity customerEntity)
         {
@@ -47,7 +58,7 @@ namespace McSharesAPI.Repository
 
         public IEnumerable<Customer> SearchCustomerByName(string name)
         {
-            return IdToCustomerList.Values.Where(customer => customer.Contacts.ContactName.ToLower().Contains(name));
+            return IdToCustomerDictionary.Values.Where(customer => customer.Contacts.ContactName.ToLower().Contains(name));
         }
         
     }

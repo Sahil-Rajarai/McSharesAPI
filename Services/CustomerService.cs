@@ -23,7 +23,7 @@ namespace McSharesAPI.Services
                 {  
                     if(int.Parse(currentCust.Shares.NumShares) > 0 && IsSharePriceValid(currentCust.Shares.SharePrice))
                     {
-                        if(currentCust.CustomerType != "Individual" || (!String.IsNullOrEmpty(currentCust.DateOfBirth) && currentCust.CustomerType == "Individual" &&  CalculateAge(currentCust.DateOfBirth) >= 18))
+                        if(currentCust.CustomerType != StaticVariables.customerTypeIndividual || (!String.IsNullOrEmpty(currentCust.DateOfBirth) && currentCust.CustomerType == StaticVariables.customerTypeIndividual &&  CalculateAge(currentCust.DateOfBirth) >= 18))
                         {
                             customerList.Add(currentCust);
                         }
