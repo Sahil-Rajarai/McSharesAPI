@@ -138,7 +138,7 @@ namespace McSharesAPI.Controllers
                 return BadRequest(error);
             }
 
-            if(customerEntity.CustomerType == "Corporate" && customerEntity.NumShares.ToString() != cust.Shares.NumShares)
+            if(customerEntity.CustomerType == StaticVariables.customerTypeCorporate && customerEntity.NumShares.ToString() != cust.Shares.NumShares)
             {
                 var error = StaticVariables.errorNumShares;
                 _logger.LogError(error, DateTime.Now);
