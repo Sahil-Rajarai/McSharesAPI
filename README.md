@@ -23,7 +23,7 @@
 * Contains the Customer and Log class to be used as the application business logic and the database access logic
 
 ## How to
-* To test the application, please download the Postman collection on the following link [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/f9518d385e9b68e79eeb)
+* To test the application, please download the Postman collection on the following link - [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/f9518d385e9b68e79eeb)
 * Follow the steps below in order to upload and read the xml file using the Web Api :
 
 1. Start the Web Api - dotnet run
