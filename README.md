@@ -2,7 +2,7 @@
 * Web API to support the upload of XML files
 
 ## Controllers
-* Upload XML file (requires xml file to be in the same format)
+* Upload XML file (requires Xml file to be in the same format)
 * Read XML file, deserialize file contents to Customer class and save valid customer details in database
 * Perform Creation, Updates, Retrieval of all records, Retrieval indiviual record by customer Id, Search Customer by name using Dependency Injection
 * Log any error and store all logs [LogsController]
