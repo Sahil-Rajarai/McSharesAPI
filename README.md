@@ -2,7 +2,7 @@
 * Web API to support the upload of XML files
 
 ## Controllers
-* Upload XML file (requires Xml file to be in the same format)
+* Upload XML file (requires Xml file to be in the same format/payload)
 * Read XML file, deserialize file contents to Customer class and save valid customer details in database
 * Perform Creation, Updates, Retrieval of all records, Retrieval indiviual record by customer Id, Search Customer by name using Dependency Injection
 * Log any error and store all logs [LogsController]
@@ -41,7 +41,7 @@
 1. Run the "UpdateCustomer" PUT request by specifying an Id in the URL(/{id}) to update the details of one customer
    * Switch to the Body tab and choose RAW
    * Choose JSON in the right dropdown and enter a valid JSON (containing the CustomerEntity class fields) for this particular customer - The JSON can contain the CustomerId
-   * JSON example - 
+   * JSON Payload example - 
      {
       "customerName": "Sahil",
       "dateOfBirth": "",
