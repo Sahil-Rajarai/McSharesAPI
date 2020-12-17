@@ -58,8 +58,10 @@
    * Send the request
    * A list of Customers with similar name will be returned
    * A 200 Ok response signals a successful retrieval of customers
-1. Run the "GetCSVFile" to get a valid CSV file
+1. Run the "GetCSVFile" request to get a valid CSV file
    * To download the CSV file - Go to Save response on Postman in the response section and choose Save to File 
    * A valid CSV file named "Reports.csv" will be downloaded on your local machine
    * A 200 Ok response signals a successful retrieval of customers and conversion to a CSV file
+1. Run the "GetAllLogs" request to get a list of all Error Logs
+   * A 200 Ok response signals a successful retrieval of all the Error Logs with their Error message and date
 
