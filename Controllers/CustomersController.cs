@@ -29,13 +29,15 @@ namespace McSharesAPI.Controllers
             _logger = logger;
         }
 
-        // GET: api/Customer/details
+        // GET: api/Customers/details
+        // Get all customers with their fields
         [HttpGet("details")]
         public Dictionary<string, Customer> Get() =>
             _customerRepository.GetAllCustomer();
 
         
-        // GET: api/Customer/5
+        // GET: api/Customers/5/details
+        // Get a specific customers with all their fields
         [HttpGet("{id}/details")]
         public ActionResult<Customer> GetCustomer(string id)
         {
@@ -51,7 +53,8 @@ namespace McSharesAPI.Controllers
             return Ok(customer);
         }
 
-        // GET: api/Customer
+        // GET: api/Customers
+        // Get all customers with only specific fields - CustomerEntity object
         [HttpGet]
         public List<CustomerEntity> GetAllCustomerEntity()
         {
@@ -66,7 +69,8 @@ namespace McSharesAPI.Controllers
             return customerEntityList;
         }
 
-        // GET: api/Customers
+        // GET: api/Customers/5
+        // Get a specific customer with only specific fields - CustomerEntity object
         [HttpGet("{id}")]
         public ActionResult<CustomerEntity> GetCustomerEntityById(String Id)
         {
@@ -82,7 +86,9 @@ namespace McSharesAPI.Controllers
 
             return Ok(CustomerMapper.ConvertCustomerToCustomerEntity(customer));
         }
-            
+        
+        // POST: api/Customers/upload
+        // processes the XML file and save the valid customers in the Db
         [HttpPost("upload")]
         public async Task<IActionResult> UploadXMLFile([FromForm] IFormFile file)
         {
@@ -111,8 +117,8 @@ namespace McSharesAPI.Controllers
 
         }
 
-         // PUT: api/TodoItems/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        // PUT: api/Customers/5
+        //update customer with new values in JSON object (deserialize to CustomerEntity)
         [HttpPut("{id}")]
         public ActionResult<CustomerEntity> PutCustomer(string id, CustomerEntity customerEntity)
         {
@@ -144,7 +150,9 @@ namespace McSharesAPI.Controllers
             return Ok(CustomerMapper.ConvertCustomerToCustomerEntity(customer));
         }
 
-        // GET: api/Customers
+        // GET: api/Customers/search?name="sa"
+        // search customers
+        //get a list of customers whose names are similar to the one passed as params
         [HttpGet("search")]
         public ActionResult<Customer> GetCustomersByName([FromQuery] string name)
         {
@@ -167,7 +175,8 @@ namespace McSharesAPI.Controllers
             return Ok(customerEntityList);
         }
 
-         // GET: api/Customers/export
+        // GET: api/Customers/export
+        // populate CSV file with CustomerEntity object using CsvHelper package and return file
         [HttpGet("export")]
         public ActionResult GetCSVFile()
         {

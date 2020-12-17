@@ -8,7 +8,10 @@ namespace McSharesAPI.Repository
 {
     public class InMemoryCustomerRepository : ICustomerRepository
     {
+        // dictionary which will contain all the valid customers retrieved from the XML file
         public Dictionary<string, Customer> IdToCustomerDictionary = new Dictionary<string, Customer>();
+        
+        // not implemented
         public Customer CreateCustomer(Customer cust)
         {
             return null;

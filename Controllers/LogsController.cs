@@ -25,7 +25,8 @@ namespace McSharesAPI.Controllers
             _logger = logger;
         }
 
-         // GET: api/Customer/details
+        // GET: api/Logs
+        //Get all Error Logs
         [HttpGet]
         public List<Log> GetAll() =>
             _logger.GetAllLogs();
