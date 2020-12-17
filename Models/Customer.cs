@@ -29,4 +29,5 @@ namespace McSharesAPI.Models
         [System.Xml.Serialization.XmlElement("Shares_Details")]
         public SharesDetails Shares { get; set; }
     }
+
 }

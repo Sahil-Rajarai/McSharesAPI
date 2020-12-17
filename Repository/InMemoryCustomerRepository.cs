@@ -1,5 +1,6 @@
 using McSharesAPI.Repository;
 using McSharesAPI.Models;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace McSharesAPI.Repository
@@ -42,6 +43,11 @@ namespace McSharesAPI.Repository
         public Customer DeleteCustomer(string Id)
         {
             return null;
+        }
+
+        public IEnumerable<Customer> SearchCustomerByName(string name)
+        {
+            return IdToCustomerList.Values.Where(customer => customer.Contacts.ContactName.ToLower().Contains(name));
         }
         
     }

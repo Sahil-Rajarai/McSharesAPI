@@ -10,6 +10,7 @@ namespace McSharesAPI.Repository
         Dictionary<string, Customer> GetAllCustomer();   
         Customer GetCustomerById(string Id);   
         Customer UpdateCustomer(Customer customerToUpdate, CustomerEntity customerEntity);   
-        Customer DeleteCustomer(string Id);   
+        Customer DeleteCustomer(string Id);
+        IEnumerable<Customer> SearchCustomerByName(string name);
     }
 }

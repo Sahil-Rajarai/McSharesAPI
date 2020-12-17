@@ -29,6 +29,7 @@ namespace McSharesAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<ICustomerRepository, InMemoryCustomerRepository>();
+            services.AddSingleton<ILoggerRepository, InMemoryLoggerRepository>();
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {

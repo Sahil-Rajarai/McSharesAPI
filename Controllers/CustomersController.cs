@@ -9,18 +9,21 @@ using McSharesAPI.Models;
 using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
+using McSharesAPI.Services;
 using Microsoft.AspNetCore.Http;
 
 namespace McSharesAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CustomerController : ControllerBase
+    public class CustomersController : ControllerBase
     {
         private ICustomerRepository _customerRepository;
-        public CustomerController(ICustomerRepository customerRepository)
+        private ILoggerRepository _logger;
+        public CustomersController(ICustomerRepository customerRepository, ILoggerRepository logger)
         {
             _customerRepository = customerRepository;
+            _logger = logger;
         }
 
         // GET: api/Customer/details
@@ -51,14 +54,14 @@ namespace McSharesAPI.Controllers
 
             foreach(Customer currentCust in _customerRepository.GetAllCustomer().Values)
             {
-                var custEntity = ConvertCustomerToCustomerEntity(currentCust);
+                var custEntity = CustomerMapper.ConvertCustomerToCustomerEntity(currentCust);
                 customerEntityList.Add(custEntity);
             }
 
             return customerEntityList;
         }
 
-          // GET: api/Customer
+        // GET: api/Customers
         [HttpGet("{id}")]
         public ActionResult<CustomerEntity> GetCustomerEntityById(String Id)
         {
@@ -66,10 +69,13 @@ namespace McSharesAPI.Controllers
 
             if (customer == null)
             {
-                return NotFound();
+                var error = "Customer not found";
+                _logger.LogError(error, DateTime.Now);
+                return NotFound(error);
+                
             }
 
-            return Ok(ConvertCustomerToCustomerEntity(customer));
+            return Ok(CustomerMapper.ConvertCustomerToCustomerEntity(customer));
         }
             
         [HttpPost("upload")]
@@ -86,7 +92,7 @@ namespace McSharesAPI.Controllers
 
             var xml = new XmlDocument();
             xml.Load(path);
-            List<Customer> customers = ValidateFile(xml);
+            List<Customer> customers =  CustomerService.ValidateFile(xml);
             var createdCustomers = _customerRepository.CreateCustomers(customers);
            
             return Ok(createdCustomers);
@@ -101,93 +107,52 @@ namespace McSharesAPI.Controllers
 
             if (cust == null)
             {
-                return BadRequest();
+                var error = "Id is incorrect";
+                _logger.LogError(error, DateTime.Now);
+                return BadRequest(error);
             }
 
             if(!String.IsNullOrEmpty(customerEntity.CustomerId) && id != customerEntity.CustomerId)
             {
-                return NotFound();
+                var error = "Id is not amendable";
+                _logger.LogError(error, DateTime.Now);
+                return BadRequest(error);
             }
 
             if(customerEntity.CustomerType == "Corporate" && customerEntity.NumShares.ToString() != cust.Shares.NumShares)
             {
-                return BadRequest("Number of Shares is not amendable if the customer is a Corporate");
+                var error = "Number of Shares is not amendable if the customer is a Corporate";
+                _logger.LogError(error, DateTime.Now);
+                return BadRequest(error);
             }
 
             var customer = _customerRepository.UpdateCustomer(cust, customerEntity);
 
-            return Ok(ConvertCustomerToCustomerEntity(customer));
+            return Ok(CustomerMapper.ConvertCustomerToCustomerEntity(customer));
         }
 
-        public List<Customer> ValidateFile(XmlDocument xmlFile) 
+        // GET: api/Customers
+        [HttpGet("search")]
+        public ActionResult<Customer> GetCustomersByName([FromQuery] string name)
         {
-            List<Customer> customerList = new List<Customer>();
-            var xmlNodes = xmlFile.SelectNodes("RequestDoc/Doc_Data/DataItem_Customer");
-            XmlSerializer serial = new XmlSerializer(typeof(Customer));
+            var customerList = _customerRepository.SearchCustomerByName(name.ToLower());
+            var customerEntityList = new List<CustomerEntity>();
 
-            foreach(XmlNode node in xmlNodes)
+            if(!customerList.Any())
             {
-                Customer currentCust =(Customer)serial.Deserialize(new XmlNodeReader(node));
-                
-                if(!String.IsNullOrEmpty(currentCust.Shares.NumShares) && !String.IsNullOrEmpty(currentCust.Shares.SharePrice))
-                {  
-                    if(int.Parse(currentCust.Shares.NumShares) > 0 && IsSharePriceValid(currentCust.Shares.SharePrice))
-                    {
-                        if(currentCust.CustomerType != "Individual" || (!String.IsNullOrEmpty(currentCust.DateOfBirth) && currentCust.CustomerType == "Individual" &&  CalculateAge(currentCust.DateOfBirth) >= 18))
-                        {
-                            customerList.Add(currentCust);
-                        }
-
-                    }
-                }
-            }
-          
-            return customerList;
-        }
-
-        public int CalculateAge(String xmlDob) 
-        {
-            DateTime dob = DateTime.Parse(xmlDob);
-            // Save today's date.
-            var today = DateTime.Today;
-            // Calculate the age.
-            var age = today.Year - dob.Year;
-            // Go back to the year in which the person was born in case of a leap year
-            if (dob.Date > today.AddYears(-age)) age--;
-
-            return age;
-
-        }
-
-        public bool IsSharePriceValid(String xmlSharePrice) 
-        {
-            int numDecimals = xmlSharePrice.Substring(xmlSharePrice.LastIndexOf('.') + 1).Length; 
-            double sharePrice = double.Parse(xmlSharePrice);
-
-            if(numDecimals == 2 && sharePrice > 0)
-            {
-                return true;
+                var error = "No customers found";
+                _logger.LogError(error, DateTime.Now);
+                return NotFound(error);
             }
 
-            return false;
-        }
-
-        public CustomerEntity ConvertCustomerToCustomerEntity(Customer customer)
-        {
-            var custEntity = new CustomerEntity
+            foreach(Customer currentCust in customerList)
             {
-                CustomerId =  customer.CustomerId,
-                CustomerName =  customer.Contacts.ContactName,
-                DateOfBirth =  customer.DateOfBirth,
-                DateIncorp =  customer.DateIncorp,
-                CustomerType =  customer.CustomerType,
-                NumShares =  double.Parse(customer.Shares.NumShares),
-                SharePrice =  double.Parse(customer.Shares.SharePrice)
-            };
+                var custEntity = CustomerMapper.ConvertCustomerToCustomerEntity(currentCust);
+                customerEntityList.Add(custEntity);
+            }
 
-            custEntity.Balance = custEntity.NumShares * custEntity.SharePrice;
-
-            return custEntity;
+            return Ok(customerEntityList);
         }
+
     }
 }
