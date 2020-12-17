@@ -8,7 +8,8 @@ using System.Xml.Serialization;
 namespace McSharesAPI.Services
 {
     public class CustomerService
-    {
+    {   
+        //Validate xmlFile as per the rules given
         public static List<Customer> ValidateFile(XmlDocument xmlFile) 
         {
             List<Customer> customerList = new List<Customer>();
@@ -21,7 +22,7 @@ namespace McSharesAPI.Services
                 
                 if(!String.IsNullOrEmpty(currentCust.Shares.NumShares) && !String.IsNullOrEmpty(currentCust.Shares.SharePrice))
                 {  
-                    if(int.Parse(currentCust.Shares.NumShares) > 0 && IsSharePriceValid(currentCust.Shares.SharePrice))
+                    if(IsInteger(currentCust.Shares.NumShares) && int.Parse(currentCust.Shares.NumShares) > 0 && IsSharePriceValid(currentCust.Shares.SharePrice))
                     {
                         if(currentCust.CustomerType != StaticVariables.customerTypeIndividual || (!String.IsNullOrEmpty(currentCust.DateOfBirth) && currentCust.CustomerType == StaticVariables.customerTypeIndividual &&  CalculateAge(currentCust.DateOfBirth) >= 18))
                         {
@@ -60,6 +61,20 @@ namespace McSharesAPI.Services
 
             return age;
 
+        }
+
+        public static bool IsInteger(String number)
+        {
+            try 
+            {
+                int.Parse(number);
+            }
+            catch
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }
