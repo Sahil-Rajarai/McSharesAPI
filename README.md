@@ -74,3 +74,4 @@
 1. Run the "GetAllLogs" request to get a list of all Error Logs
    * A 200 Ok response signals a successful retrieval of all the Error Logs with their Error message and date
 
+Unfortunately, due to the lack of time, the last 2 parts of the requirements could not be completed.
