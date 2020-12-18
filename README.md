@@ -47,7 +47,6 @@
 1. Run the "UpdateCustomer" PUT request by specifying an Id in the URL(/{id}) to update the details of one customer
    * Switch to the Body tab and choose RAW
    * Choose JSON in the right dropdown and enter a valid JSON (containing the CustomerEntity class fields) for this particular customer - The JSON can contain the CustomerId
-   * A 200 Ok response signals a successful update
    * JSON Payload example - 
    
    ```json
@@ -61,6 +60,7 @@
      "balance": 36800
     }
     ```
+   * A 200 Ok response signals a successful update
 1. Run the "SearchCustomers" to get a list of Customers who have name similar to the one passed as parameter
    * Switch to Params in Postman 
    * Add the key "name" and any string on the value
