@@ -41,14 +41,16 @@ namespace McSharesAPI.Repositories
 
             return customerToUpdate;
         }
+
+        // not implemented as not part of requirements
         public Customer DeleteCustomer(string Id)
         {
-            return null;
+            throw new NotImplementedException();
         }
 
         public IEnumerable<Customer> SearchCustomerByName(string name)
         {
-            return _customerDictionary.Values.Where(customer => customer.Contacts.ContactName.ToLower().Contains(name));
+            return _customerDictionary.Values.ToList().AsReadOnly().Where(customer => customer.Contacts.ContactName.ToLower().Contains(name));
         }
 
         public IEnumerable<Customer> GetAllCustomer()

@@ -127,7 +127,7 @@ namespace McSharesAPI.Controllers
             {
                 var error = ErrorMessages.IncorrectId;
                 _logger.LogError(error);
-                return BadRequest(error); // not found
+                return NotFound(error); // not found
             }
 
             if(!string.IsNullOrEmpty(customerEntity.CustomerId) && id != customerEntity.CustomerId)
@@ -153,7 +153,7 @@ namespace McSharesAPI.Controllers
         // search customers
         //get a list of customers whose names are similar to the one passed as params
         [HttpGet("search")]
-        public ActionResult<Customer> GetCustomersByName([FromQuery] string name)
+        public ActionResult<CustomerEntity> GetCustomersByName([FromQuery] string name)
         {
             var customerList = _customerRepository.SearchCustomerByName(name.ToLower());
             var customerEntityList = new List<CustomerEntity>();
