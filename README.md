@@ -19,10 +19,11 @@
 * All Validations are done in the class CustomerService
 * CustomerMapper class is used for mapping of customers to get only specific fields that are returned in Get Request
 
-## Repository
+## Repositories
 * Customer Details and Logs stored in Memory (Only need to change the InMemoryCustomerRepository class and InMemoryLoggerRepository class if another Db is used)
 * InMemoryCustomerRepository class and InMemoryLoggerRepository class implements the ICustomerRepository and ILoggerRepository respectively which is used in the ontroller class (Dependency Injection)
 * Controller calls the Repository class to get or modify customer records depending on thecan  request
+* All records retrieved from the repository class are read-only for proper encapsulation
 * Search on database can be optimised using CQRS with eventstore and elasticsearch in future
 
 ## Models
