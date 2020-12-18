@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "yqLKKTjy8Dd8v+I07u1fa1g19pX6IQ9rqb4gyieiDY2XasZM85GpQqeS6XxwfdfTb+ErtK7gA3I8O+UarXa1dA==",
+  "dgSpecHash": "bSn2xW/tOJm+R6qwapi4wU6H3SktwQj940SIF5QjmKTK2Wfx1hQBZWVFkeXoYR4c06LN5x/YQfazFq6QmNbJKQ==",
   "success": true,
-  "projectFilePath": "C:\\Users\\Lenovo\\Documents\\McSharesAPI\\McSharesAPI.csproj",
+  "projectFilePath": "C:\\Users\\Lenovo\\Documents\\McSharesAPI\\src\\McSharesAPI\\McSharesAPI.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Lenovo\\.nuget\\packages\\csvhelper\\18.0.0\\csvhelper.18.0.0.nupkg.sha512",
     "C:\\Users\\Lenovo\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",
