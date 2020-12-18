@@ -1,13 +1,13 @@
 using McSharesAPI.Models;
 using System.Collections.Generic;
 
-namespace McSharesAPI.Repository
+namespace McSharesAPI.Repositories
 {
     public interface ICustomerRepository
     {
         Customer CreateCustomer(Customer cust);   
-        Dictionary<string, Customer> CreateCustomers(List<Customer> customersList);   
-        Dictionary<string, Customer> GetAllCustomer();   
+        IEnumerable<Customer> CreateCustomers(List<Customer> customersList);   
+        IEnumerable<Customer> GetAllCustomer();   
         Customer GetCustomerById(string Id);   
         Customer UpdateCustomer(Customer customerToUpdate, CustomerEntity customerEntity);   
         Customer DeleteCustomer(string Id);

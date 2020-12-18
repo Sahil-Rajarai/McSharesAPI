@@ -1,49 +1,36 @@
-using McSharesAPI.Repository;
 using McSharesAPI.Models;
 using System.Linq;
 using System.Collections.Generic;
 using System;
 
-namespace McSharesAPI.Repository
+namespace McSharesAPI.Repositories
 {
     public class InMemoryCustomerRepository : ICustomerRepository
     {
         // dictionary which will contain all the valid customers retrieved from the XML file
-        public Dictionary<string, Customer> IdToCustomerDictionary = new Dictionary<string, Customer>();
+        private Dictionary<string, Customer> _customerDictionary = new Dictionary<string, Customer>();
         
-        // not implemented
+        // not implemented as not part of requirements
         public Customer CreateCustomer(Customer cust)
         {
-            return null;
+            throw new NotImplementedException();
         }
 
-        public Dictionary<string, Customer> CreateCustomers(List<Customer> customersList)
+        public IEnumerable<Customer> CreateCustomers(List<Customer> customersList)
         {
             foreach(Customer cust in customersList)
             {
-                try
-                {
-                    IdToCustomerDictionary.Add(cust.CustomerId, cust);
-                }
-                catch(Exception e)
-                {
-                    return new Dictionary<string, Customer>
-                    {
-                        { e.Message, null }
-                    };
-                }
+                _customerDictionary.Add(cust.CustomerId, cust);
             }
             
-            return IdToCustomerDictionary;
+            return _customerDictionary.Values.ToList().AsReadOnly();
         }
-        public Dictionary<string, Customer> GetAllCustomer()
-        {
-            return IdToCustomerDictionary;
-        }
+
         public Customer GetCustomerById(string Id)
         {
-            return IdToCustomerDictionary.ContainsKey(Id) ? IdToCustomerDictionary[Id] : null;
+            return _customerDictionary.ContainsKey(Id) ? _customerDictionary[Id] : null;
         }
+        
         public Customer UpdateCustomer(Customer customerToUpdate, CustomerEntity customerEntity)
         {
             customerToUpdate.Contacts.ContactName = customerEntity.CustomerName;
@@ -61,8 +48,12 @@ namespace McSharesAPI.Repository
 
         public IEnumerable<Customer> SearchCustomerByName(string name)
         {
-            return IdToCustomerDictionary.Values.Where(customer => customer.Contacts.ContactName.ToLower().Contains(name));
+            return _customerDictionary.Values.Where(customer => customer.Contacts.ContactName.ToLower().Contains(name));
         }
-        
+
+        public IEnumerable<Customer> GetAllCustomer()
+        {
+            return _customerDictionary.Values.ToList().AsReadOnly();
+        }
     }
 }

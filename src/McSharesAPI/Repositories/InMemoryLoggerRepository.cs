@@ -2,25 +2,26 @@ using System;
 using System.Collections.Generic;
 using McSharesAPI.Models;
 
-namespace McSharesAPI.Repository
+namespace McSharesAPI.Repositories
 {
     public class InMemoryLoggerRepository : ILoggerRepository
     {
-        public List<Log> logList = new List<Log>();
-        public void LogError(string message, DateTime time)
+        private List<Log> _logList = new List<Log>();
+
+        public void LogError(string message)
         {
             var log = new Log
             {
                 ErrorMessage = message,
-                Time = time
+                Time = DateTime.UtcNow
             };
 
-            logList.Add(log);
+            _logList.Add(log);
         }
 
-        public List<Log> GetAllLogs()
+        public IEnumerable<Log> GetAllLogs()
         {
-            return logList;
+            return _logList.AsReadOnly();
         }
     }
 }

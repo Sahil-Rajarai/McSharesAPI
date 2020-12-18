@@ -9,6 +9,6 @@ namespace McSharesAPI.Models
         public string CustomerType { get; set; }
         public double NumShares { get; set; }
         public double SharePrice { get; set; }
-        public double Balance { get; set; }
+        public double Balance => NumShares * SharePrice;
     }
 }

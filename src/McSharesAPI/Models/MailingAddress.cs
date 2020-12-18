@@ -1,17 +1,19 @@
+using System.Xml.Serialization;
+
 namespace McSharesAPI.Models
 {
     public class MailingAddress
     {
-        [System.Xml.Serialization.XmlElement("Address_Line1")]
+        [XmlElement("Address_Line1")]
         public string AddressLine1 { get; set; }
 
-        [System.Xml.Serialization.XmlElement("Address_Line2")]
+        [XmlElement("Address_Line2")]
         public string AddressLine2 { get; set; }
 
-        [System.Xml.Serialization.XmlElement("Town_City")]
+        [XmlElement("Town_City")]
         public string TownCity { get; set; }
 
-        [System.Xml.Serialization.XmlElement("Country")]
+        [XmlElement("Country")]
         public string Country { get; set; }
 
     }

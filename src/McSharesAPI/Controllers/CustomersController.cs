@@ -4,11 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using McSharesAPI.Repository;
+using McSharesAPI.Repositories;
 using McSharesAPI.Models;
 using System.IO;
 using System.Xml;
-using System.Xml.Serialization;
 using McSharesAPI.Services;
 using Microsoft.AspNetCore.Http;
 using CsvHelper;
@@ -23,6 +22,7 @@ namespace McSharesAPI.Controllers
     {
         private ICustomerRepository _customerRepository;
         private ILoggerRepository _logger;
+        
         public CustomersController(ICustomerRepository customerRepository, ILoggerRepository logger)
         {
             _customerRepository = customerRepository;
@@ -32,9 +32,8 @@ namespace McSharesAPI.Controllers
         // GET: api/Customers/details
         // Get all customers with their fields
         [HttpGet("details")]
-        public Dictionary<string, Customer> Get() =>
+        public IEnumerable<Customer> GetAllCustomers() =>
             _customerRepository.GetAllCustomer();
-
         
         // GET: api/Customers/5/details
         // Get a specific customers with all their fields
@@ -45,8 +44,8 @@ namespace McSharesAPI.Controllers
 
             if (customer == null)
             {
-                var error = StaticVariables.errorCustomerNotFound;
-                _logger.LogError(error, DateTime.Now);
+                var error = ErrorMessages.CustomerNotFound;
+                _logger.LogError(error);
                 return NotFound(error);
             }
 
@@ -56,11 +55,11 @@ namespace McSharesAPI.Controllers
         // GET: api/Customers
         // Get all customers with only specific fields - CustomerEntity object
         [HttpGet]
-        public List<CustomerEntity> GetAllCustomerEntity()
+        public List<CustomerEntity> GetAllCustomersEntity()
         {
             List<CustomerEntity> customerEntityList = new List<CustomerEntity>();
 
-            foreach(Customer currentCust in _customerRepository.GetAllCustomer().Values)
+            foreach(var currentCust in _customerRepository.GetAllCustomer())
             {
                 var custEntity = CustomerMapper.ConvertCustomerToCustomerEntity(currentCust);
                 customerEntityList.Add(custEntity);
@@ -72,14 +71,14 @@ namespace McSharesAPI.Controllers
         // GET: api/Customers/5
         // Get a specific customer with only specific fields - CustomerEntity object
         [HttpGet("{id}")]
-        public ActionResult<CustomerEntity> GetCustomerEntityById(String Id)
+        public ActionResult<CustomerEntity> GetCustomerEntityById(string Id)
         {
             var customer = _customerRepository.GetCustomerById(Id);
 
             if (customer == null)
             {
-                var error = StaticVariables.errorCustomerNotFound;
-                _logger.LogError(error, DateTime.Now);
+                var error = ErrorMessages.CustomerNotFound;
+                _logger.LogError(error);
                 return NotFound(error);
                 
             }
@@ -90,7 +89,7 @@ namespace McSharesAPI.Controllers
         // POST: api/Customers/upload
         // processes the XML file and save the valid customers in the Db
         [HttpPost("upload")]
-        public async Task<IActionResult> UploadXMLFile([FromForm] IFormFile file)
+        public async Task<IActionResult> UploadXmlFile([FromForm] IFormFile file)
         {
             var xmlData = Path.Combine(Environment.CurrentDirectory, "data");
             Directory.CreateDirectory(xmlData);
@@ -103,18 +102,18 @@ namespace McSharesAPI.Controllers
 
             var xml = new XmlDocument();
             xml.Load(path);
-            List<Customer> customers =  CustomerService.ValidateFile(xml);
-            var createdCustomers = _customerRepository.CreateCustomers(customers);
-           
-           if(createdCustomers.Values.First() is null)
-           {
-                var error = createdCustomers.Keys.First();
-                _logger.LogError(error, DateTime.Now);
-                return BadRequest(error);
-           }
-
-            return Created(nameof(Customer), createdCustomers);
-
+            var customers =  CustomerService.ValidateFile(xml);
+            
+            try
+            {
+                var createdCustomers = _customerRepository.CreateCustomers(customers);
+                return Created(nameof(Customer), createdCustomers);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return Conflict(ex.Message);
+            }
         }
 
         // PUT: api/Customers/5
@@ -126,22 +125,22 @@ namespace McSharesAPI.Controllers
 
             if (cust == null)
             {
-                var error = StaticVariables.errorIncorrectId;
-                _logger.LogError(error, DateTime.Now);
+                var error = ErrorMessages.IncorrectId;
+                _logger.LogError(error);
+                return BadRequest(error); // not found
+            }
+
+            if(!string.IsNullOrEmpty(customerEntity.CustomerId) && id != customerEntity.CustomerId)
+            {
+                var error = ErrorMessages.NotAmendableId;
+                _logger.LogError(error);
                 return BadRequest(error);
             }
 
-            if(!String.IsNullOrEmpty(customerEntity.CustomerId) && id != customerEntity.CustomerId)
+            if(customerEntity.CustomerType == CustomerTypes.Corporate && customerEntity.NumShares.ToString() != cust.Shares.NumShares)
             {
-                var error = StaticVariables.errorNotAmendableId;
-                _logger.LogError(error, DateTime.Now);
-                return BadRequest(error);
-            }
-
-            if(customerEntity.CustomerType == StaticVariables.customerTypeCorporate && customerEntity.NumShares.ToString() != cust.Shares.NumShares)
-            {
-                var error = StaticVariables.errorNumShares;
-                _logger.LogError(error, DateTime.Now);
+                var error = ErrorMessages.NumShares;
+                _logger.LogError(error);
                 return BadRequest(error);
             }
 
@@ -161,8 +160,8 @@ namespace McSharesAPI.Controllers
 
             if(!customerList.Any())
             {
-                var error = StaticVariables.errorNoCustomersFoundName;
-                _logger.LogError(error, DateTime.Now);
+                var error = ErrorMessages.NoCustomersFoundName;
+                _logger.LogError(error);
                 return NotFound(error);
             }
 
@@ -178,11 +177,11 @@ namespace McSharesAPI.Controllers
         // GET: api/Customers/export
         // populate CSV file with CustomerEntity object using CsvHelper package and return file
         [HttpGet("export")]
-        public ActionResult GetCSVFile()
+        public ActionResult GetCsvFile()
         {
             var customerEntityList = new List<CustomerEntity>();
 
-            foreach(Customer currentCust in _customerRepository.GetAllCustomer().Values)
+            foreach(var currentCust in _customerRepository.GetAllCustomer())
             {
                 var custEntity = CustomerMapper.ConvertCustomerToCustomerEntity(currentCust);
                 customerEntityList.Add(custEntity);
@@ -208,17 +207,15 @@ namespace McSharesAPI.Controllers
                     }
                 }
 
-                var error = StaticVariables.errorNoCustomersFound;
-                _logger.LogError(error, DateTime.Now);
+                var error = ErrorMessages.NoCustomersFound;
+                _logger.LogError(error);
                 return NotFound(error);
             }
             catch(Exception e)
             {
-                _logger.LogError(e.Message, DateTime.Now);
+                _logger.LogError(e.Message);
                 return BadRequest(e.Message);
             }
-           
         }
-
     }
 }

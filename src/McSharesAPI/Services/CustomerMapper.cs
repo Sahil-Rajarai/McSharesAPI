@@ -17,8 +17,6 @@ namespace McSharesAPI
                 SharePrice =  double.Parse(customer.Shares.SharePrice)
             };
 
-            custEntity.Balance = custEntity.NumShares * custEntity.SharePrice;
-
             return custEntity;
         }
     }
