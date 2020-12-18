@@ -13,10 +13,10 @@
   * 400 Bad Request if the request is incorrect due to validations
   * 404 Not Found if no customers are found when returning customer by their Id or name
   * 409 Conflict if customer with the same Id is inserted again in the database
+* All const variables and error messages are saved in the CustomerTypes and ErrorMessages class 
 
 ## Services
 * All Validations are done in the class CustomerService
-* All Static variables which are hard-coded are saved in the StaticVariables class 
 * CustomerMapper class is used for mapping of customers to get only specific fields that are returned in Get Request
 
 ## Repository
@@ -61,7 +61,7 @@
         }
     ```
     
-   * A 200 Ok response signals a successful update
+  * A 200 Ok response signals a successful update
 1. Run the "SearchCustomers" to get a list of Customers who have name similar to the one passed as parameter
    * Switch to Params in Postman 
    * Add the key "name" and any string on the value
