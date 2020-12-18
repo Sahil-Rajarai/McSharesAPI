@@ -48,16 +48,17 @@
    * Switch to the Body tab and choose RAW
    * Choose JSON in the right dropdown and enter a valid JSON (containing the CustomerEntity class fields) for this particular customer - The JSON can contain the CustomerId
   * A 200 Ok response signals a successful update
-  * JSON Payload example - ```
-      {
-       "customerName": "Sahil",
-       "dateOfBirth": "",
-       "dateIncorp": "01/07/2012",
-       "customerType": "Corporate",
-       "numShares": 4000,
-       "sharePrice": 20.2,
-       "balance": 36800
-      }
+  * JSON Payload example - 
+  ```json
+  {
+   "customerName": "Sahil",
+   "dateOfBirth": "",
+   "dateIncorp": "01/07/2012",
+   "customerType": "Corporate",
+   "numShares": 4000,
+   "sharePrice": 20.2,
+   "balance": 36800
+  }
   ```
 1. Run the "SearchCustomers" to get a list of Customers who have name similar to the one passed as parameter
    * Switch to Params in Postman 
