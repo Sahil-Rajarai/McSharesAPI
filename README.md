@@ -7,16 +7,23 @@
 * Perform Creation, Updates, Retrieval of all records, Retrieval indiviual record by customer Id, Search Customer by name using Dependency Injection
 * Log any error and store all logs [LogsController]
 * Allow the downloads of CSV file containing customer details using the CsvHelper package
+* Status code returned :
+  * 200 OK in successful GET operations
+  * 201 Created in successful creation of customers
+  * 400 Bad Request if the request is incorrect due to validations
+  * 404 Not Found if no customers are found when getting a customer by their Id or name
+  * 409 Conflict if customer with the same Id is inserted again in the database
+* All const variables and error messages are saved in the CustomerTypes and ErrorMessages class 
 
 ## Services
 * All Validations are done in the class CustomerService
-* All Static variables which are hard-coded are saved in the StaticVariables class 
 * CustomerMapper class is used for mapping of customers to get only specific fields that are returned in Get Request
 
-## Repository
+## Repositories
 * Customer Details and Logs stored in Memory (Only need to change the InMemoryCustomerRepository class and InMemoryLoggerRepository class if another Db is used)
 * InMemoryCustomerRepository class and InMemoryLoggerRepository class implements the ICustomerRepository and ILoggerRepository respectively which is used in the ontroller class (Dependency Injection)
 * Controller calls the Repository class to get or modify customer records depending on thecan  request
+* All records retrieved from the repository class are read-only for proper encapsulation
 * Search on database can be optimised using CQRS with eventstore and elasticsearch in future
 
 ## Models
@@ -26,7 +33,7 @@
 * To test the application, please download the Postman collection on the following link - [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/f9518d385e9b68e79eeb)
 * Follow the steps below in order to upload and read the xml file using the Web Api :
 
-1. Start the Web Api - dotnet run
+1. Start the Web Api - dotnet run --project .\src\McSharesAPI\McSharesAPI.csproj
 1. Register a new XML file - "UploadFile" POST request on Postman 
    * Switch to the Body tab and choose form-data.
    * Add the key "file", select File from the next dropdown and then browse for the XML file 
@@ -42,15 +49,18 @@
    * Switch to the Body tab and choose RAW
    * Choose JSON in the right dropdown and enter a valid JSON (containing the CustomerEntity class fields) for this particular customer - The JSON can contain the CustomerId
    * JSON Payload example - 
-     {
-      "customerName": "Sahil",
-      "dateOfBirth": "",
-      "dateIncorp": "01/07/2012",
-      "customerType": "Corporate",
-      "numShares": 4000,
-      "sharePrice": 20.2,
-      "balance": 36800
+   
+   ```json
+    {
+     "customerName": "Sahil",
+     "dateOfBirth": "",
+     "dateIncorp": "01/07/2012",
+     "customerType": "Corporate",
+     "numShares": 4000,
+     "sharePrice": 20.2,
+     "balance": 36800
     }
+    ```
    * A 200 Ok response signals a successful update
 1. Run the "SearchCustomers" to get a list of Customers who have name similar to the one passed as parameter
    * Switch to Params in Postman 
@@ -65,3 +75,4 @@
 1. Run the "GetAllLogs" request to get a list of all Error Logs
    * A 200 Ok response signals a successful retrieval of all the Error Logs with their Error message and date
 
+Unfortunately, due to the lack of time, the last 2 parts of the requirements could not be completed.
