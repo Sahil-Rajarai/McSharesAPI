@@ -32,7 +32,7 @@
 * To test the application, please download the Postman collection on the following link - [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/f9518d385e9b68e79eeb)
 * Follow the steps below in order to upload and read the xml file using the Web Api :
 
-1. Start the Web Api - dotnet run
+1. Start the Web Api - dotnet run --project .\src\McSharesAPI\McSharesAPI.csproj
 1. Register a new XML file - "UploadFile" POST request on Postman 
    * Switch to the Body tab and choose form-data.
    * Add the key "file", select File from the next dropdown and then browse for the XML file 
