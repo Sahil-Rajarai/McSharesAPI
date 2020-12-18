@@ -7,6 +7,12 @@
 * Perform Creation, Updates, Retrieval of all records, Retrieval indiviual record by customer Id, Search Customer by name using Dependency Injection
 * Log any error and store all logs [LogsController]
 * Allow the downloads of CSV file containing customer details using the CsvHelper package
+* Status code returned :
+  * 200 OK in successful GET operations
+  * 201 Created in successful creation of customers
+  * 400 Bad Request if the request is incorrect due to validations
+  * 404 Not Found if no customers are found when returning customer by their Id or name
+  * 409 Conflict if customer with the same Id is inserted again in the database
 
 ## Services
 * All Validations are done in the class CustomerService
@@ -42,15 +48,19 @@
    * Switch to the Body tab and choose RAW
    * Choose JSON in the right dropdown and enter a valid JSON (containing the CustomerEntity class fields) for this particular customer - The JSON can contain the CustomerId
    * JSON Payload example - 
-     {
-      "customerName": "Sahil",
-      "dateOfBirth": "",
-      "dateIncorp": "01/07/2012",
-      "customerType": "Corporate",
-      "numShares": 4000,
-      "sharePrice": 20.2,
-      "balance": 36800
-    }
+   
+      ```javascript
+         {
+          "customerName": "Sahil",
+          "dateOfBirth": "",
+          "dateIncorp": "01/07/2012",
+          "customerType": "Corporate",
+          "numShares": 4000,
+          "sharePrice": 20.2,
+          "balance": 36800
+        }
+    ```
+    
    * A 200 Ok response signals a successful update
 1. Run the "SearchCustomers" to get a list of Customers who have name similar to the one passed as parameter
    * Switch to Params in Postman 
