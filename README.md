@@ -11,7 +11,7 @@
   * 200 OK in successful GET operations
   * 201 Created in successful creation of customers
   * 400 Bad Request if the request is incorrect due to validations
-  * 404 Not Found if no customers are found when returning customer by their Id or name
+  * 404 Not Found if no customers are found when getting a customer by their Id or name
   * 409 Conflict if customer with the same Id is inserted again in the database
 * All const variables and error messages are saved in the CustomerTypes and ErrorMessages class 
 
@@ -60,7 +60,6 @@
           "balance": 36800
         }
     ```
-    
   * A 200 Ok response signals a successful update
 1. Run the "SearchCustomers" to get a list of Customers who have name similar to the one passed as parameter
    * Switch to Params in Postman 
